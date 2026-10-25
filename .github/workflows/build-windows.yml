@@ -1,0 +1,28 @@
+name: Build ClassBridge AI for Windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Download files
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install libraries
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ClassBridgeAI_GitHub_Actions/requirements.txt
+          pip install pyinstaller
+      - name: Build Windows program
+        run: |
+          pyinstaller --noconfirm --onedir --windowed --name ClassBridgeAI --collect-all faster_whisper --collect-all ctranslate2 --collect-all transformers --collect-all tokenizers --collect-all sentencepiece ClassBridgeAI_GitHub_Actions/app.py
+      - name: Save program
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClassBridgeAI-Windows
+          path: dist/ClassBridgeAI/
